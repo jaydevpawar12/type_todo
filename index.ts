@@ -6,6 +6,7 @@ import authRoute from "./routes/authRoutes";
 import todoRoute from "./routes/todoRoutes";
 import dotenv from "dotenv";
 import { userProtected } from "./middleware/protected";
+import { app, httpServer } from "./socket/socket";
 // import { userProtected } from "./middleware/protected";
 
 // Load environment variables from .env file
@@ -14,7 +15,7 @@ dotenv.config();
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URL as string);
 
-const app = express();
+// const app = express();
 
 app.use(express.json());
 app.use(cookieParser());
@@ -38,7 +39,7 @@ app.use(
 
 mongoose.connection.once("open", () => {
   console.log("Mongoose connected");
-  app.listen(process.env.PORT, () => {
+  httpServer.listen(process.env.PORT, () => {
     console.log(`Server running on port ${process.env.PORT}`);
   });
 });

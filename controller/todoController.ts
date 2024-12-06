@@ -3,6 +3,8 @@ import asyncHandler from "express-async-handler"
 import { todoSchema } from "../middleware/validation";
 import Todo from "../model/Todo";
 import { string } from "zod";
+import { io } from "../socket/socket";
+import { todo } from "node:test";
 
 interface CustomRequest extends Request{
   user?:string
@@ -23,6 +25,8 @@ export const createTodo = asyncHandler( async (req: CustomRequest, res: Response
       }
       const newTodo = await Todo.create({...validatedData.data,userId:req.user});
       console.log(req.user)
+      const data = await Todo.find({userId:req.user});
+      io.emit("Todo-emit",data)
       res.status(201).json({
         message: "Todo created successfully",
         data: newTodo,
@@ -69,6 +73,8 @@ export const createTodo = asyncHandler( async (req: CustomRequest, res: Response
         });
       }
   
+      const data = await Todo.find({userId:req.user});
+      io.emit("Todo-emit",data)
       // Respond with the updated todo
       res.status(200).json({
         message: "Todo updated successfully",
@@ -90,7 +96,8 @@ export const createTodo = asyncHandler( async (req: CustomRequest, res: Response
           message: "Todo not found",
         });
       }
-  
+      const data = await Todo.find({userId:req.user});
+      io.emit("Todo-emit",data)
       // Respond with success message and deleted todo data
       res.status(200).json({
         message: "Todo deleted successfully",
